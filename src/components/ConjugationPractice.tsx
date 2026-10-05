@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { verbData } from '../data';
+import { useState, useEffect } from 'react';
+import { verbData, normalizeItalian } from '../data';
 import type { Pronoun, Tense } from '../data';
-import { Lightbulb, CheckCircle, XCircle } from 'lucide-react';
+import { Lightbulb, CheckCircle, XCircle, Eye } from 'lucide-react';
 
 const pronouns: Pronoun[] = ['io', 'tu', 'lui/lei', 'noi', 'voi', 'loro'];
 // const tenses: Tense[] = [
-  // 'presente', 'passato prossimo', 'imperfetto',
-  // We'll limit to a few for the exercise demo, but you can expand this
+// 'presente', 'passato prossimo', 'imperfetto',
+// We'll limit to a few for the exercise demo, but you can expand this
 // ];
 
 const ConjugationPractice: React.FC = () => {
@@ -16,6 +16,7 @@ const ConjugationPractice: React.FC = () => {
   const [userInput, setUserInput] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [showHint, setShowHint] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   const generateNewExercise = () => {
     const randomVerbIndex = Math.floor(Math.random() * verbData.length);
@@ -29,6 +30,7 @@ const ConjugationPractice: React.FC = () => {
     setUserInput('');
     setFeedback(null);
     setShowHint(false);
+    setRevealed(false);
   };
 
   useEffect(() => {
@@ -40,11 +42,21 @@ const ConjugationPractice: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (userInput.toLowerCase().trim() === correctAnswer?.toLowerCase()) {
+    if (!correctAnswer) return;
+
+    if (normalizeItalian(userInput) === normalizeItalian(correctAnswer)) {
       setFeedback('correct');
       setTimeout(generateNewExercise, 1500);
     } else {
       setFeedback('incorrect');
+    }
+  };
+
+  const handleReveal = () => {
+    if (correctAnswer) {
+      setUserInput(correctAnswer);
+      setRevealed(true);
+      setFeedback('incorrect'); // They didn't get it right on their own
     }
   };
 
@@ -80,13 +92,15 @@ const ConjugationPractice: React.FC = () => {
               }`}
               placeholder="Type conjugation here..."
               autoFocus
+              readOnly={revealed || feedback === 'correct'}
             />
           </div>
 
-          <div className="flex gap-4 mb-4">
+          <div className="flex flex-wrap justify-center gap-4 mb-4">
             <button
               type="submit"
-              className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+              disabled={revealed || feedback === 'correct'}
+              className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
             >
               Check Answer
             </button>
@@ -99,6 +113,14 @@ const ConjugationPractice: React.FC = () => {
             </button>
             <button
               type="button"
+              onClick={handleReveal}
+              disabled={revealed || feedback === 'correct'}
+              className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition-colors flex items-center gap-2 disabled:opacity-50"
+            >
+              <Eye size={18} /> Reveal
+            </button>
+            <button
+              type="button"
               onClick={generateNewExercise}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
             >
@@ -106,18 +128,23 @@ const ConjugationPractice: React.FC = () => {
             </button>
           </div>
 
-          {feedback === 'correct' && (
-            <p className="text-green-600 font-bold flex items-center gap-2">
+          {feedback === 'correct' && !revealed && (
+            <p className="text-green-600 font-bold flex items-center gap-2 mt-2">
               <CheckCircle size={20} /> Correct! Perfetto!
             </p>
           )}
-          {feedback === 'incorrect' && (
-            <p className="text-red-500 font-bold flex items-center gap-2">
+          {feedback === 'incorrect' && !revealed && (
+            <p className="text-red-500 font-bold flex items-center gap-2 mt-2">
               <XCircle size={20} /> Incorrect, try again.
             </p>
           )}
+          {revealed && (
+            <p className="text-purple-600 font-bold flex items-center gap-2 mt-2">
+              <Eye size={20} /> Answer revealed. Moving on...
+            </p>
+          )}
 
-          {showHint && (
+          {showHint && !revealed && (
             <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg w-full text-center">
               <p className="text-amber-800">
                 <strong>Hint:</strong> The verb is <em>{currentVerb.regular ? 'regular' : 'irregular'}</em>.

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { grammarRules } from '../data';
 
 const GrammarGuide: React.FC = () => {
@@ -44,6 +44,46 @@ const GrammarGuide: React.FC = () => {
                   ))}
                 </ul>
               </div>
+
+              {rule.regularEndings && (
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2">Regular Conjugation:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-3 rounded shadow-sm border border-gray-100">
+                      <h5 className="font-bold text-indigo-700 mb-1">-are verbs</h5>
+                      <ul className="list-none text-gray-600 text-sm">
+                        {rule.regularEndings.are.map((ending, i) => <li key={i}>{ending}</li>)}
+                      </ul>
+                    </div>
+                    <div className="bg-white p-3 rounded shadow-sm border border-gray-100">
+                      <h5 className="font-bold text-indigo-700 mb-1">-ere verbs</h5>
+                      <ul className="list-none text-gray-600 text-sm">
+                        {rule.regularEndings.ere.map((ending, i) => <li key={i}>{ending}</li>)}
+                      </ul>
+                    </div>
+                    <div className="bg-white p-3 rounded shadow-sm border border-gray-100">
+                      <h5 className="font-bold text-indigo-700 mb-1">-ire verbs</h5>
+                      <ul className="list-none text-gray-600 text-sm">
+                        {rule.regularEndings.ire.map((ending, i) => <li key={i}>{ending}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {rule.importantIrregulars && (
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2">Important Irregulars:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {rule.importantIrregulars.map((irr, i) => (
+                       <div key={i} className="bg-amber-50 p-3 rounded border border-amber-200">
+                         <span className="font-bold text-amber-900 block mb-1">{irr.verb}</span>
+                         <span className="text-amber-800 text-sm">{irr.conjugation.join(', ')}</span>
+                       </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <h4 className="text-lg font-semibold text-gray-800 mb-2">Examples:</h4>
