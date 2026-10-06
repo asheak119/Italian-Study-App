@@ -3,10 +3,11 @@ import GrammarGuide from './components/GrammarGuide';
 import ConjugationPractice from './components/ConjugationPractice';
 import VocabularyPractice from './components/VocabularyPractice';
 import StoryPractice from './components/StoryPractice';
-import { BookOpen, PenTool, Brain, ScrollText } from 'lucide-react';
+import FlashcardsPractice from './components/FlashcardsPractice';
+import { BookOpen, PenTool, Brain, ScrollText, Zap } from 'lucide-react';
 import './index.css';
 
-type Tab = 'grammar' | 'conjugation' | 'vocabulary' | 'story';
+type Tab = 'grammar' | 'conjugation' | 'vocabulary' | 'story' | 'flashcards';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('grammar');
@@ -53,6 +54,14 @@ function App() {
             >
               <ScrollText size={18} /> Story
             </button>
+            <button
+              onClick={() => setActiveTab('flashcards')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'flashcards' ? 'bg-white text-indigo-900 shadow' : 'text-indigo-100 hover:bg-indigo-700'
+              }`}
+            >
+              <Zap size={18} /> Flashcards
+            </button>
           </nav>
         </div>
       </header>
@@ -62,6 +71,7 @@ function App() {
         {activeTab === 'conjugation' && <ConjugationPractice />}
         {activeTab === 'vocabulary' && <VocabularyPractice />}
         {activeTab === 'story' && <StoryPractice />}
+        {activeTab === 'flashcards' && <FlashcardsPractice />}
       </main>
 
       <footer className="bg-gray-800 text-gray-400 py-6 text-center mt-auto">
